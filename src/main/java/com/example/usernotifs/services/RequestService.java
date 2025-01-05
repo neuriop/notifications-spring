@@ -1,6 +1,8 @@
 package com.example.usernotifs.services;
 
+import com.example.usernotifs.models.Course;
 import com.example.usernotifs.models.Notification;
+import com.example.usernotifs.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -31,4 +33,26 @@ public class RequestService {
         restTemplate.put(url, notification);
     }
 
+    // request to course by id;
+    public Course getCourse(int id){
+        String url = "http://localhost:8081/courses/getbyid/" + id;
+        ResponseEntity<Course> response = restTemplate.getForEntity(url, Course.class);
+        return response.getBody();
+    }
+
+    // request to get all users
+    public List<User> getAllUsers(){
+        String url = "http://localhost:8083/users/";
+        ParameterizedTypeReference<List<User>> responseType = new ParameterizedTypeReference<List<User>>() {};
+        ResponseEntity<List<User>> response = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
+        return response.getBody();
+    }
+
+
+    // request user by id
+    public User getUser(int id){
+        String url = "http://localhost:8083/users/" + id;
+        ResponseEntity<User> response = restTemplate.getForEntity(url, User.class);
+        return response.getBody();
+    }
 }

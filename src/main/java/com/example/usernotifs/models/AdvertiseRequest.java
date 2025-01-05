@@ -2,18 +2,18 @@ package com.example.usernotifs.models;
 
 public class AdvertiseRequest {
     private int[] userid;
-    private String message;
+    private int courseid;
 
-    public AdvertiseRequest(int[] userid, String message) {
+    public AdvertiseRequest(int[] userid, int courseid) {
         this.userid = userid;
-        this.message = message;
+        this.courseid = courseid;
     }
 
     public int[] getUserid() {
         return userid;
     }
 
-    public String getMessage() {
-        return message;
+    public int getCourseid() {
+        return courseid;
     }
 }

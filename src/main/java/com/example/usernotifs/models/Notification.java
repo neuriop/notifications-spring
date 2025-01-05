@@ -12,11 +12,6 @@ public class Notification {
         this.notificationMessages = new HashMap<>();
     }
 
-    public Notification(int userid, Map<Integer, String> notificationMessages) {
-        this.userid = userid;
-        this.notificationMessages = notificationMessages;
-    }
-
     public int getUserid() {
         return userid;
     }

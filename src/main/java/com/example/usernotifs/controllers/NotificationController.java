@@ -19,23 +19,39 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.getNotifFromCache(userid));
     }
 
+    // any message
     @PutMapping(value = "/users/{id}/send")
-    public ResponseEntity<String> sendNotifications(@PathVariable int userid, @RequestBody String notification){
-        return ResponseEntity.ok();
+    public ResponseEntity<String> sendNotifications(@PathVariable int userid, @RequestParam String message){
+        notificationService.sendMessage(userid, message);
+        return ResponseEntity.ok("Success");
     }
 
-    @GetMapping(value = "/users/{userid}/notifications/{notifid}")
-    public ResponseEntity<String> getNotificationById(@PathVariable int userid, @PathVariable int notifid){
-        return ResponseEntity.ok();
+
+    // called by enrollment when user registered
+    @PutMapping(value = "/users/{id}/register")
+    public ResponseEntity<String> sendNotifications(@PathVariable int userid, @RequestParam int courseid){
+        notificationService.registerUser(userid, courseid);
+        return ResponseEntity.ok("Success");
     }
 
-    @PutMapping(value = "/advertise")
-    public ResponseEntity<String> advertiseByIds(@RequestBody AdvertiseRequest request){
-        return ResponseEntity.ok();
+    // called when user registered
+    // welcoming new user
+    @PostMapping(value = "/users/{id}/new")
+    public ResponseEntity<String> sendNotifications(@PathVariable int userid){
+        notificationService.registerUser(userid);
+        return ResponseEntity.ok("Success");
     }
 
+    // called by enrollment when multpile users registered
+//    @PutMapping(value = "/advertise")
+//    public ResponseEntity<String> advertiseByIds(@RequestBody AdvertiseRequest request){
+//        return ResponseEntity.ok();
+//    }
+
+    // called by course when new course created
     @PutMapping(value = "/advertise/all")
-    public ResponseEntity<String> advertiseByIds(@RequestBody String message){
-        return ResponseEntity.ok();
+    public ResponseEntity<String> advertiseByIds(@RequestParam int courseid){
+        notificationService.advertiseAll(courseid);
+        return ResponseEntity.ok("Success");
     }
 }
