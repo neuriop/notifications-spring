@@ -16,7 +16,7 @@ public class RequestService {
     private RestTemplate restTemplate;
 
     public List<Notification> getAllNotifs(){
-        String url = "http://localhost:8085/notifications/all";
+        String url = "http://localhost:8085/notifications/get";
         ParameterizedTypeReference<List<Notification>> responseType = new ParameterizedTypeReference<List<Notification>>() {};
         ResponseEntity<List<Notification>> response = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
         return response.getBody();
@@ -31,6 +31,11 @@ public class RequestService {
     public void putNotif(Notification notification){
         String url = "http://localhost:8085/notfications/users/" + notification.getUserid() + "/put";
         restTemplate.put(url, notification);
+    }
+
+    public void saveNotifs(List<Notification> notifications){
+        String url = "http://localhost:8085/notifications/save";
+        restTemplate.put(url, notifications);
     }
 
     // request to course by id;
