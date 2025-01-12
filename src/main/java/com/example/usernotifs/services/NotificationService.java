@@ -1,6 +1,6 @@
 package com.example.usernotifs.services;
 
-import com.example.usernotifs.models.AdvertiseRequest;
+
 import com.example.usernotifs.models.Course;
 import com.example.usernotifs.models.Notification;
 import com.example.usernotifs.models.User;
@@ -14,27 +14,52 @@ import java.util.stream.Collectors;
 @Service
 public class NotificationService {
     private List<Notification> notificationsCache = new ArrayList<>();
+    private Set<Integer> uniqueCoursesCache = new HashSet<>();
     @Autowired
     private RequestService requestService;
 
-    private void fetchNotifs(){
-        notificationsCache = requestService.getAllNotifs();
+    private void fetchNotifs() {
+        List<Notification> notifs;
+        if ((notifs = requestService.getAllNotifs()) != null) {
+            notificationsCache = notifs;
+        }
     }
 
-    private void saveNotifs(){
+    public List<Notification> getNotificationsCache(){
+        fetchNotifs();
+        return notificationsCache;
+    }
+
+    private void saveNotifs() {
         requestService.saveNotifs(notificationsCache);
     }
 
-    public Notification getNotifFromCache(int id){
+
+    public void scheduledCourseNotification() {
+        List<User> users = requestService.getAllUsers();
+        Set<Integer> setu = users.stream().map(user -> (int) user.getId()).collect(Collectors.toSet());
+        if (!setu.isEmpty()) {
+            setu.forEach(this::registerUser);
+        }
+        List<Course> course = requestService.getAllCourse();
+        Set<Integer> sets = course.stream().map(Course::getId).collect(Collectors.toSet());
+        sets.removeAll(uniqueCoursesCache);
+        if (!sets.isEmpty()) {
+            sets.forEach(this::advertiseAll);
+        }
+        uniqueCoursesCache.addAll(sets);
+        saveNotifs();
+    }
+
+    public Notification getNotifFromCache(int id) {
         fetchNotifs();
         Optional<Notification> result = notificationsCache.stream()
                 .filter(notification -> notification.getUserid() == id)
                 .findAny();
-        saveNotifs();
         return result.orElse(null);
     }
 
-    public void registerUser(int userid){
+    public void registerUser(int userid) {
         fetchNotifs();
         User user = requestService.getUser(userid);
         String message = "Welcome, " + user.getName() + " " + user.getSurname() + ", to our course service! Choose course to register.";
@@ -44,41 +69,39 @@ public class NotificationService {
         saveNotifs();
     }
 
-    public void registerUser(int userid, int courseid){
+    public void registerUser(int userid, int courseid) {
         fetchNotifs();
         User user = requestService.getUser(userid);
         Course course = requestService.getCourse(courseid);
-        String message = "Hello, "+ user.getName() + " " + user.getSurname() +", you have been registered to " + course.getName();
+        String message = "Hello, " + user.getName() + " " + user.getSurname() + ", you have been registered to " + course.getName();
         for (Notification notification : notificationsCache) {
-            if (userid == notification.getUserid()){
+            if (userid == notification.getUserid()) {
                 notification.putMessage(message);
                 saveNotifs();
                 return;
             }
         }
-        saveNotifs();
+
     }
 
-    public void sendMessage(int userid, String message){
+    public void sendMessage(int userid, String message) {
         fetchNotifs();
         for (Notification notification : notificationsCache) {
-            if (userid == notification.getUserid()){
+            if (userid == notification.getUserid()) {
                 notification.putMessage(message);
                 saveNotifs();
                 return;
             }
         }
-        saveNotifs();
+
     }
 
-    public void advertiseAll(int id){
-        fetchNotifs();
-        Course course = requestService.getCourse(id);
-        String message = "New " + course.getName() + " is now available: " + course.getDescription();
+    public void advertiseAll(int id) {
+//        Course course = requestService.getCourse(id);
+        String message = "New " + id + " is now available: ";
         for (Notification notification : notificationsCache) {
             notification.putMessage(message);
         }
-        saveNotifs();
     }
 
 

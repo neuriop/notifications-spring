@@ -1,13 +1,12 @@
 package com.example.usernotifs.controllers;
 
-import com.example.usernotifs.models.AdvertiseRequest;
 import com.example.usernotifs.models.Notification;
 import com.example.usernotifs.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/notifications")
@@ -53,5 +52,16 @@ public class NotificationController {
     public ResponseEntity<String> advertiseByIds(@RequestParam int courseid){
         notificationService.advertiseAll(courseid);
         return ResponseEntity.ok("Success");
+    }
+
+    @GetMapping(value = "/test/getcourses")
+    public ResponseEntity<String> getCourses(){
+        notificationService.scheduledCourseNotification();
+        return ResponseEntity.ok("ok");
+    }
+
+    @GetMapping(value = "/test/getall")
+    public ResponseEntity<List<Notification>> getNotifications(){
+        return ResponseEntity.ok(notificationService.getNotificationsCache());
     }
 }
